@@ -1,5 +1,7 @@
 package com.newsum;
 
+import com.newsum.model.Contact;
+
 import java.sql.*;
 
 import java.util.List;
@@ -18,11 +20,14 @@ public class JdbcMain {
 
             // TODO: Create a DB table
             statement.executeUpdate("DROP TABLE IF EXISTS contacts");
-            statement.executeUpdate("CREATE TABLE contacts (id INTEGER, firstname STRING, lastname STRING, email STRING, phone INT(10))");
+            statement.executeUpdate("CREATE TABLE contacts (id INTEGER PRIMARY KEY, firstname STRING, lastname STRING, email STRING, phone INT(10))");
 
             // TODO: Insert a couple contacts
-            statement.executeUpdate("INSERT INTO contacts (id, firstname, lastname, email, phone) VALUES(1,'Micah','Newsum','micahnew90@yahoo.com',5622346959)");
-            statement.executeUpdate("INSERT INTO contacts (id, firstname, lastname, email, phone) VALUES(2,'Aysha','Newsum','ajainoor@yahoo.com',5627081405)");
+            Contact c = new Contact("Micah","Newsum","micahnew90@yahoo.com",5622346959L);
+            save(c,statement);
+
+            c = new Contact("Aysha","Newsum","ajainoor@yahoo.com",5627081405L);
+            save(c,statement);
 
             // TODO: Fetch all the records from the contacts table
             ResultSet rs = statement.executeQuery("SELECT * FROM contacts");
@@ -44,5 +49,12 @@ public class JdbcMain {
             // Display connection or query errors
             System.err.printf("There was a database error: %s%n",ex.getMessage());
         }
+    }
+
+    public static void save(Contact contact, Statement statement) throws SQLException {
+        String sql = "INSERT INTO contacts(firstname,lastname,email,phone) VALUES('%s','%s','%s','%d')";
+        sql = String.format(sql, contact.getFirstName(), contact.getLastName(), contact.getEmail(), contact.getPhone());
+
+        statement.executeUpdate(sql);
     }
 }
